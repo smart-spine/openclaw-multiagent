@@ -1,0 +1,78 @@
+terraform {
+  required_providers {
+    hcloud = {
+      source  = "hetznercloud/hcloud"
+      version = "~> 1.45"
+    }
+  }
+}
+
+data "hcloud_ssh_key" "main" {
+  fingerprint = var.ssh_key_fingerprint
+}
+
+resource "hcloud_firewall" "main" {
+  name = "${var.project_name}-${var.environment}-firewall"
+
+  dynamic "rule" {
+    for_each = var.ssh_allowed_cidrs
+    content {
+      direction  = "in"
+      protocol   = "tcp"
+      port       = "22"
+      source_ips = [rule.value]
+    }
+  }
+
+  rule {
+    direction       = "out"
+    protocol        = "tcp"
+    port            = "1-65535"
+    destination_ips = ["0.0.0.0/0", "::/0"]
+  }
+
+  rule {
+    direction       = "out"
+    protocol        = "udp"
+    port            = "1-65535"
+    destination_ips = ["0.0.0.0/0", "::/0"]
+  }
+
+  rule {
+    direction       = "out"
+    protocol        = "icmp"
+    destination_ips = ["0.0.0.0/0", "::/0"]
+  }
+}
+
+resource "hcloud_server" "main" {
+  name        = "${var.project_name}-${var.environment}"
+  server_type = var.server_type
+  image       = var.server_image
+  location    = var.server_location
+  ssh_keys    = [data.hcloud_ssh_key.main.id]
+  user_data   = var.cloud_init_user_data
+
+  labels = {
+    project     = var.project_name
+    environment = var.environment
+    managed_by  = "terraform"
+  }
+
+  public_net {
+    ipv4_enabled = true
+    ipv6_enabled = true
+  }
+
+  lifecycle {
+    ignore_changes = [
+      user_data,
+      ssh_keys,
+    ]
+  }
+}
+
+resource "hcloud_firewall_attachment" "main" {
+  firewall_id = hcloud_firewall.main.id
+  server_ids  = [hcloud_server.main.id]
+}

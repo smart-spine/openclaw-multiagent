@@ -1,0 +1,4 @@
+# One skill id per line.
+# Installed at container startup with clawhub.
+# Leave empty by default for stable first deploy.
+# Add skills later when you are ready to review/approve each one.
