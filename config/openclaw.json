@@ -86,6 +86,13 @@
           ]
         }
       },
+      "heartbeat": {
+        "every": "0m",
+        "model": "openai/gpt-5-nano",
+        "includeReasoning": false,
+        "target": "last",
+        "suppressToolErrorWarnings": true
+      },
       "maxConcurrent": 1,
       "subagents": {
         "maxConcurrent": 1,
@@ -107,6 +114,9 @@
         "workspace": "~/.openclaw/workspace/workspace-main",
         "agentDir": "~/.openclaw/agents/main/agent",
         "model": "openai/gpt-5.2-codex",
+        "heartbeat": {
+          "every": "1h"
+        },
         "identity": {
           "name": "Main Agent"
         }
@@ -123,6 +133,9 @@
             "openai/gpt-5.1-codex",
             "openai/gpt-5.2-codex"
           ]
+        },
+        "heartbeat": {
+          "every": "1h"
         },
         "identity": {
           "name": "CTO Agent",
@@ -166,6 +179,9 @@
         "workspace": "~/.openclaw/workspace/workspace-engineering/coder",
         "agentDir": "~/.openclaw/agents/coder/agent",
         "model": "openai/gpt-5.2-codex",
+        "heartbeat": {
+          "every": "1h"
+        },
         "identity": {
           "name": "Coder Agent",
           "theme": "engineering",
@@ -196,6 +212,9 @@
         "workspace": "~/.openclaw/workspace/workspace-engineering/tester",
         "agentDir": "~/.openclaw/agents/tester/agent",
         "model": "openai/gpt-5.2-codex",
+        "heartbeat": {
+          "every": "1h"
+        },
         "identity": {
           "name": "Tester Agent",
           "theme": "quality",
