@@ -209,6 +209,9 @@ __marimo__/
 # OpenClaw deployment local secrets/state
 config/inputs.sh
 secrets/openclaw.env
+secrets/google/
+secrets/client_secret_*.json
+secrets/*.oauth.json
 infra/terraform/**/.terraform/
 infra/terraform/**/*.tfstate
 infra/terraform/**/*.tfstate.*

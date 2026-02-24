@@ -55,3 +55,16 @@ make tunnel
 ```
 
 For full instructions, see `docs/openclaw-hetzner-quickstart-en.md`.
+
+## Google OAuth client import (optional, for meeting agents)
+
+If you downloaded OAuth client JSON from Google Cloud:
+
+```bash
+./scripts/import-google-oauth-client.sh /absolute/path/to/client_secret_*.json
+make google-refresh-token
+make push-google-secrets
+make push-env
+```
+
+This stores OAuth JSON locally under `secrets/google/` (gitignored), obtains and saves a refresh token into `secrets/openclaw.env`, and pushes file/env to VPS.

@@ -1,0 +1,296 @@
+{
+  "gateway": {
+    "mode": "local",
+    "port": 18789,
+    "bind": "lan",
+    "auth": {
+      "mode": "token",
+      "token": "${OPENCLAW_GATEWAY_TOKEN}"
+    }
+  },
+  "channels": {
+    "telegram": {
+      "enabled": true,
+      "commands": {
+        "native": true
+      },
+      "accounts": {
+        "default": {
+          "botToken": "${TELEGRAM_BOT_TOKEN}"
+        }
+      },
+      "dmPolicy": "disabled",
+      "groupPolicy": "allowlist",
+      "streaming": "off",
+      "groups": {
+        "-1003633569118": {
+          "groupPolicy": "disabled",
+          "topics": {
+            "2": {
+              "groupPolicy": "open",
+              "requireMention": false
+            }
+          }
+        },
+        "-1003807893166": {
+          "groupPolicy": "open",
+          "requireMention": true
+        }
+      }
+    }
+  },
+  "messages": {
+    "groupChat": {
+      "historyLimit": 12
+    }
+  },
+  "plugins": {
+    "entries": {
+      "telegram": {
+        "enabled": true
+      }
+    }
+  },
+  "agents": {
+    "defaults": {
+      "model": {
+        "primary": "openai/gpt-5.2-codex",
+        "fallbacks": [
+          "openai/gpt-5.1-codex",
+          "openai/gpt-4.1-mini"
+        ]
+      },
+      "compaction": {
+        "mode": "safeguard"
+      },
+      "contextPruning": {
+        "mode": "cache-ttl",
+        "ttl": "55m",
+        "keepLastAssistants": 3,
+        "softTrimRatio": 0.3,
+        "hardClearRatio": 0.5,
+        "minPrunableToolChars": 50000,
+        "softTrim": {
+          "maxChars": 4000,
+          "headChars": 1500,
+          "tailChars": 1500
+        },
+        "hardClear": {
+          "enabled": true,
+          "placeholder": "[Old tool result content cleared]"
+        },
+        "tools": {
+          "deny": [
+            "browser",
+            "canvas"
+          ]
+        }
+      },
+      "maxConcurrent": 1,
+      "subagents": {
+        "maxConcurrent": 1,
+        "maxSpawnDepth": 2,
+        "maxChildrenPerAgent": 4,
+        "archiveAfterMinutes": 60
+      },
+      "sandbox": {
+        "mode": "off",
+        "workspaceAccess": "rw",
+        "scope": "agent"
+      }
+    },
+    "list": [
+      {
+        "id": "main",
+        "default": true,
+        "name": "Main Agent",
+        "workspace": "~/.openclaw/workspace/workspace-main",
+        "agentDir": "~/.openclaw/agents/main/agent",
+        "model": "openai/gpt-5.2-codex",
+        "identity": {
+          "name": "Main Agent"
+        }
+      },
+      {
+        "id": "cto",
+        "default": false,
+        "name": "CTO Agent",
+        "workspace": "~/.openclaw/workspace/workspace-cto",
+        "agentDir": "~/.openclaw/agents/cto/agent",
+        "model": {
+          "primary": "openai/gpt-4.1-mini",
+          "fallbacks": [
+            "openai/gpt-5.1-codex",
+            "openai/gpt-5.2-codex"
+          ]
+        },
+        "identity": {
+          "name": "CTO Agent",
+          "theme": "orchestrator",
+          "emoji": "cto"
+        },
+        "subagents": {
+          "allowAgents": [
+            "coder",
+            "tester"
+          ],
+          "model": "openai/gpt-5.2-codex"
+        },
+        "tools": {
+          "profile": "minimal",
+          "alsoAllow": [
+            "sessions_spawn",
+            "subagents",
+            "agents_list",
+            "session_status"
+          ],
+          "deny": [
+            "exec",
+            "process",
+            "group:fs",
+            "web_search",
+            "web_fetch",
+            "message",
+            "sessions_send",
+            "sessions_list",
+            "sessions_history"
+          ],
+          "elevated": {
+            "enabled": false
+          }
+        }
+      },
+      {
+        "id": "coder",
+        "name": "Coder Agent",
+        "workspace": "~/.openclaw/workspace/workspace-engineering/coder",
+        "agentDir": "~/.openclaw/agents/coder/agent",
+        "model": "openai/gpt-5.2-codex",
+        "identity": {
+          "name": "Coder Agent",
+          "theme": "engineering",
+          "emoji": "coder"
+        },
+        "tools": {
+          "profile": "coding",
+          "deny": [
+            "sessions_spawn",
+            "sessions_send",
+            "sessions_list",
+            "sessions_history",
+            "subagents",
+            "gateway",
+            "cron",
+            "message",
+            "web_search",
+            "web_fetch"
+          ],
+          "elevated": {
+            "enabled": false
+          }
+        }
+      },
+      {
+        "id": "tester",
+        "name": "Tester Agent",
+        "workspace": "~/.openclaw/workspace/workspace-engineering/tester",
+        "agentDir": "~/.openclaw/agents/tester/agent",
+        "model": "openai/gpt-5.2-codex",
+        "identity": {
+          "name": "Tester Agent",
+          "theme": "quality",
+          "emoji": "tester"
+        },
+        "tools": {
+          "profile": "coding",
+          "deny": [
+            "sessions_spawn",
+            "sessions_send",
+            "sessions_list",
+            "sessions_history",
+            "subagents",
+            "gateway",
+            "cron",
+            "message",
+            "web_search",
+            "web_fetch"
+          ],
+          "elevated": {
+            "enabled": false
+          }
+        }
+      }
+    ]
+  },
+  "tools": {
+    "profile": "minimal",
+    "sessions": {
+      "visibility": "all"
+    },
+    "agentToAgent": {
+      "enabled": true,
+      "allow": [
+        "cto",
+        "coder",
+        "tester"
+      ]
+    },
+    "elevated": {
+      "enabled": false
+    },
+    "subagents": {
+      "tools": {
+        "deny": [
+          "gateway",
+          "cron"
+        ]
+      }
+    }
+  },
+  "bindings": [
+    {
+      "agentId": "cto",
+      "match": {
+        "channel": "telegram",
+        "accountId": "default",
+        "peer": {
+          "kind": "group",
+          "id": "-1003633569118:topic:2"
+        }
+      }
+    },
+    {
+      "agentId": "cto",
+      "match": {
+        "channel": "telegram",
+        "accountId": "default",
+        "peer": {
+          "kind": "group",
+          "id": "-1003807893166"
+        }
+      }
+    }
+  ],
+  "auth": {
+    "profiles": {
+      "openai:main": {
+        "provider": "openai",
+        "mode": "token"
+      }
+    },
+    "order": {
+      "openai": [
+        "openai:main"
+      ]
+    }
+  },
+  "commands": {
+    "native": "auto",
+    "nativeSkills": "auto"
+  },
+  "logging": {
+    "level": "info",
+    "consoleLevel": "info",
+    "redactSensitive": "tools"
+  }
+}
