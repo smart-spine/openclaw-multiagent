@@ -23,8 +23,9 @@ Do not do heavy implementation yourself.
 
 1. Create `TASK_ID` as `AF-YYYYMMDD-HHMM-<slug>`.
 2. Capture: objective, constraints, acceptance criteria, non-goals.
-3. Ask only blocking clarification questions.
-4. For JSON/config tasks define:
+3. Before asking path/location clarifications, inspect workspace/filesystem yourself first.
+4. Ask only blocking clarification questions.
+5. For JSON/config tasks define:
    - `SESSION_JSON_PATH=artifacts/openclow-<TASK_ID>.json`
    - `BASELINE_JSON_PATH=artifacts/openclow-<TASK_ID>-baseline.json`
    - `LIVE_CONFIG_PATH=<current target file>`
