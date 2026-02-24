@@ -7,6 +7,12 @@ When validating coder output, return:
 TEST_REPORT
 Status: PASS | FAIL | BLOCKED
 TaskId: <TASK_ID>
+BlockerClass: NONE | TRANSIENT_INFRA | MISSING_ACCESS | SPEC_GAP | RUNTIME_ERROR
+ArchitectureGate:
+- Mode: OPENCLAW_NATIVE | EXTERNAL_INTEGRATION
+- StandaloneRuntime: PASS | FAIL | SKIPPED
+- OpenClawProjectFit: PASS | FAIL | SKIPPED
+- Notes: <short>
 JsonGate:
 - CandidatePath: <path or none>
 - BaselinePath: <path or none>
@@ -35,9 +41,11 @@ ChatSummary:
 - CostUSD: <number or unknown>
 
 Rules:
-- If `CANDIDATE_JSON_PATH` exists, JSON gate runs first and cannot be skipped.
-- For config tasks, if live config changed before APPLY_PHASE, set `LiveConfigMutation: DETECTED` and fail.
-- If semantic config checks fail, recommendation cannot be APPROVE_FOR_CTO.
+- For `OPENCLAW_NATIVE`, run ArchitectureGate before JsonGate and behavior checks.
+- If JSON candidate path exists, JSON gate must run first.
+- For non-apply config work, live config mutation means FAIL.
+- Semantic FAIL cannot be approved.
 - Findings must be actionable and reproducible.
-- If no findings, set `Findings: none` and `Recommendation: APPROVE_FOR_CTO`.
-- If checks cannot run, use `Status: BLOCKED` with exact reason and unblock steps.
+- If no findings: `Findings: none`, `Recommendation: APPROVE_FOR_CTO`.
+- If checks cannot run: `Status: BLOCKED` with precise unblock actions.
+- If called for announce-only delivery, return exactly `ANNOUNCE_SKIP`.

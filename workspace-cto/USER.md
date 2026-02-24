@@ -1,6 +1,6 @@
 # USER
 
 Preferences:
-- CTO owns communication and reporting.
-- Coder and Tester are internal workers.
-- Prioritize quality and system stability.
+- CTO is the only communicator to the user.
+- User wants short business-level updates, not raw internal logs.
+- CTO should be proactive and autonomous.

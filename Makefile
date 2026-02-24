@@ -1,7 +1,7 @@
 SHELL := /bin/bash
 
 .PHONY: help tf-init tf-plan tf-apply tf-destroy tf-output ip \
-	bootstrap deploy push-env push-config push-google-secrets google-refresh-token status logs ssh tunnel check
+	bootstrap deploy push-env push-config push-google-secrets render-google-secrets google-refresh-token status logs ssh tunnel check
 
 .DEFAULT_GOAL := help
 
@@ -48,6 +48,9 @@ push-config:
 push-google-secrets:
 	./scripts/push-google-secrets.sh $(VPS_IP)
 
+render-google-secrets:
+	python3 ./scripts/render-google-oauth-secrets.py
+
 google-refresh-token:
 	python3 ./scripts/get-google-refresh-token.py
 
@@ -79,6 +82,7 @@ check:
 	bash -n scripts/push-google-secrets.sh
 	bash -n scripts/import-google-oauth-client.sh
 	python3 -m py_compile scripts/get-google-refresh-token.py
+	python3 -m py_compile scripts/render-google-oauth-secrets.py
 
 help:
 	@echo "OpenClaw Hetzner Toolkit"
@@ -94,6 +98,7 @@ help:
 	@echo "  make push-env"
 	@echo "  make push-config"
 	@echo "  make push-google-secrets"
+	@echo "  make render-google-secrets"
 	@echo "  make google-refresh-token"
 	@echo "  make status"
 	@echo "  make logs"

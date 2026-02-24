@@ -1,6 +1,6 @@
 # HEARTBEAT
 
-If heartbeat runs:
-- check active TASK_ID states
-- detect blocked loops
-- avoid noisy outputs
+On heartbeat:
+- detect stuck tasks and stalled child sessions
+- trigger recovery (retry/respawn) when safe
+- keep noise low in user channel

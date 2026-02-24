@@ -26,6 +26,8 @@ services:
       DISCORD_BOT_TOKEN: ${DISCORD_BOT_TOKEN:-}
       SLACK_BOT_TOKEN: ${SLACK_BOT_TOKEN:-}
       SLACK_APP_TOKEN: ${SLACK_APP_TOKEN:-}
+      GOOGLE_OAUTH_CLIENT_JSON_PATH: ${GOOGLE_OAUTH_CLIENT_JSON_PATH:-/home/node/.openclaw/secrets/google/oauth-client.json}
+      GOOGLE_OAUTH_TOKEN_JSON_PATH: ${GOOGLE_OAUTH_TOKEN_JSON_PATH:-/home/node/.openclaw/secrets/google/token.json}
     volumes:
       - ${OPENCLAW_CONFIG_DIR:-/home/openclaw/.openclaw}:/home/node/.openclaw
       - ${OPENCLAW_WORKSPACE_DIR:-/home/openclaw/.openclaw/workspace}:/home/node/.openclaw/workspace

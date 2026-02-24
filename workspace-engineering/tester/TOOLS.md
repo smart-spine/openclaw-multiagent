@@ -8,3 +8,8 @@ Preferred gate stack for JSON tasks:
 - `jq`, `diff`, `git diff --name-status`
 - `python3 -m json.tool` fallback when `jq` is unavailable
 - optional `openclaw` CLI dry-run checks when available in runtime
+
+If validation expectations are unclear, use `web_search`/`web_fetch` against:
+- https://docs.openclaw.ai/concepts/multi-agent
+- https://docs.openclaw.ai/tools/subagents
+- https://docs.openclaw.ai/session-tool
