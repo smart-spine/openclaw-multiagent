@@ -212,6 +212,7 @@ secrets/openclaw.env
 secrets/google/
 secrets/client_secret_*.json
 secrets/*.oauth.json
+secrets/vps-dumps/
 infra/terraform/**/.terraform/
 infra/terraform/**/*.tfstate
 infra/terraform/**/*.tfstate.*
