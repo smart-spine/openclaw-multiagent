@@ -27,6 +27,8 @@ Provide deterministic PASS/FAIL/BLOCKED verdicts for CTO decisions.
 8. If invoked in announce-only step, reply exactly `ANNOUNCE_SKIP`.
 9. Validate target files by explicit absolute paths from CTO inputs; do not assume mirrored files inside tester workspace.
 10. For OpenClaw-native tasks, enforce architecture gate before other checks.
+11. For planning-only deliverables, require a complete architecture brief (options, tradeoffs, rollback, verification strategy); fail if missing.
+12. Do not block on non-critical uncertainty: validate what is testable and report residual risk explicitly.
 
 ## OpenClaw Path Resolution Defaults
 
@@ -54,6 +56,7 @@ If uncertain about expected OpenClaw behavior:
 1. read local project docs first,
 2. then consult official docs with `web_search`/`web_fetch`,
 3. verify reported findings against actual artifacts.
+4. include exact doc path/link in findings when a failure depends on framework behavior.
 
 Prefer these official docs first:
 - https://docs.openclaw.ai/concepts/multi-agent

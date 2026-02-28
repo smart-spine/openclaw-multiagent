@@ -1,33 +1,69 @@
 ---
 name: cto-intake-wizard
-description: Non-technical intake flow for turning broad user intent into executable CTO packets.
+description: Audience-adaptive intake for turning broad user intent into executable CTO packets.
 ---
-
-Use this skill at the start of new user tasks.
+Use this skill at the beginning of new tasks.
 
 ## Goal
 
-Collect only organizational inputs and proceed fast with defaults.
+Collect enough information to execute without over-questioning.
 
-## Intake Questions (choose only missing ones)
+## Step 1: Detect Audience Mode
 
-1. What outcome should be true when this is done?
-2. Where should it run (chat/channel/environment)?
-3. Should it run on demand, schedule, or trigger?
-4. What user-facing output is expected (short alert/report)?
-5. Any hard constraints (deadline, compliance, no-downtime)?
+Set `audience_mode`:
+- `tech` when request is implementation-heavy (APIs, schemas, infra, migrations, performance, models, tools).
+- `biz` when request is outcome-driven and non-technical.
+- `auto` fallback when uncertain.
 
-## Rules
+Allow explicit overrides from user:
+- `/tech` -> `tech`
+- `/biz` -> `biz`
 
-- Ask at most 3 questions per message.
-- Avoid implementation-detail questions unless blocking.
-- If user answers partially, fill defaults and continue.
-- After intake, immediately publish `CTO_STATUS` and start execution.
-- Default to Phase A (`APPLY_PHASE=false`) unless user explicitly asks to apply now.
-- Classify intent for delegation packet:
-  - user says "create new agent" -> `AGENT_INTENT=NEW_AGENT`
-  - user says "sub-agent" -> `AGENT_INTENT=SUB_AGENT`
-  - user asks for both -> `AGENT_INTENT=NEW_AGENT_WITH_SUBAGENTS`
-- Default orchestration mode:
-  - sequential build/test pipeline -> `SEQUENTIAL_SYNC` (`sessions_send`)
-  - only explicit background request -> `ASYNC_BACKGROUND` (`sessions_spawn`)
+## Step 2: Ask Minimal Clarifications (max 3)
+
+### For `biz`
+Ask organizational questions only:
+1. What outcome should be true when done?
+2. Where should result appear/run?
+3. Any hard business constraints (deadline/compliance/no-downtime)?
+
+### For `tech`
+Ask high-impact design questions:
+1. Critical non-functional constraints (latency/reliability/cost)?
+2. Integration boundaries (systems/secrets/ownership)?
+3. Whether plan approval is desired before coding?
+
+## Step 3: Unknown-Friendly Handling
+
+If user says “don’t know/not sure”:
+1. Acknowledge.
+2. Choose safe defaults.
+3. Record in `ASSUMPTIONS_LOG`.
+4. Continue execution without stalling.
+
+Do not escalate unknowns unless they are true blockers.
+
+## Step 4: Produce Intake Output
+
+Return structured intake context for delegation:
+
+```yaml
+TASK_ID: <id>
+AUDIENCE_MODE: <tech|biz|auto>
+OBJECTIVE: <normalized>
+DESTINATION: <channel/thread/path>
+CADENCE_OR_TRIGGER: <on-demand|schedule|event>
+CONSTRAINTS: [<item>, ...]
+ASSUMPTIONS_LOG: [<assumption>, ...]
+PLAN_APPROVAL_REQUIRED: <true|false>
+APPLY_PHASE: <false by default>
+```
+
+## Defaults
+
+When user is unsure:
+- Destination: current channel/thread.
+- Output style: short actionable summary.
+- Cadence: on-demand (or hourly for monitoring automations).
+- Language: mirror user language.
+- Apply mode: `APPLY_PHASE=false` unless explicitly requested.
